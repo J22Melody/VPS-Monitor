@@ -11,6 +11,7 @@ SSH_list = {
 }
 
 class SSH:
+
     def __init__(self, **options):
         #建立连接
         ssh = paramiko.SSHClient()
@@ -28,6 +29,7 @@ class SSH:
 
     @staticmethod
     def getInstance(**options):
+        # todo 线程不安全
         hostname = options.get('hostname')
         instance = SSH_list.get(hostname)
         if instance == None:
