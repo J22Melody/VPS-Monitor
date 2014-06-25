@@ -6,6 +6,8 @@ from django.template import RequestContext
 
 from forms import *
 
+from remote import *
+
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -26,4 +28,7 @@ def logout_view(request):
 
 @login_required(login_url='/login/')
 def index(request):
-    return HttpResponse("Hello world")
+    stat = viewMemory() + '\n' + viewNetwork() + '\n' + viewDisk()
+    print stat
+    stat = stat.replace(" ", "&nbsp;&nbsp;").replace("\n", "<br/>")
+    return HttpResponse(stat)

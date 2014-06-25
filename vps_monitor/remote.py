@@ -14,7 +14,7 @@ ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 #连接远程客户机器
 try:
-    ssh.connect('vps.jiangzifan.com',port=22,username='root',password='jzf19921222',compress=True)
+    ssh.connect('vps.jiangzifan.com',port=22,username='test',password='jzf19921222',compress=True)
 except Exception, e:
     print e
 
@@ -27,8 +27,3 @@ def viewNetwork():
 
 def viewDisk():
     return ssh.exec_command('df -h')[1].read()
-
-
-print viewMemory()
-print viewNetwork()
-print viewDisk()
