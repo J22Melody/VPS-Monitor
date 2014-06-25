@@ -14,7 +14,8 @@ def login_view(request):
             password = form.cleaned_data["password"]
             user = authenticate(username=username, password=password)
             login(request,user)
-            return HttpResponseRedirect('/')
+            next_url = request.GET.get('next','/')
+            return HttpResponseRedirect(next_url)
     else:
         form = LoginForm()
     return render_to_response('login.html',context_instance=RequestContext(request,{"form":form}))
