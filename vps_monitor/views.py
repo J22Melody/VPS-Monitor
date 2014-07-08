@@ -33,11 +33,19 @@ def index(request):
     return render_to_response('index.html',context_instance=RequestContext(request,{'remote_list': remote_list}))
 
 def get_os(request):
-    options = {
+    options = fromRequest(request)
+    data = SSH.getInstance(**options).execCommand('cat /etc/issue')
+    return HttpResponse(json.dumps({'success':True, 'data': data}),mimetype="application/json")
+
+def get_mem(request):
+    options = fromRequest(request)
+    data = SSH.getInstance(**options).execCommand('free -m').split('\n')[2]
+    return HttpResponse(json.dumps({'success':True, 'data': data}),mimetype="application/json")
+
+def fromRequest(request):
+    return {
         'hostname': request.GET.get('hostname'),
         'port': int(request.GET.get('port')),
         'username': request.GET.get('username'),
         'password': request.GET.get('password')
     }
-    data = SSH.getInstance(**options).execCommand('cat /etc/issue')
-    return HttpResponse(json.dumps({'success':True, 'data': data}),mimetype="application/json")

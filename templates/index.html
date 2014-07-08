@@ -13,6 +13,9 @@
       <td>
         操作系统
       </td>
+      <td>
+        内存占用（used/free）
+      </td>
     </tr>
   </thead>
   <tbody>
@@ -28,6 +31,8 @@
         {{ remote.username }}
       </td>
       <td class='J_async' data-view='/get_os'>
+      </td>
+      <td class='J_async' data-view='/get_mem'>
       </td>
     </tr>
     {% endfor %}
