@@ -11,8 +11,7 @@ urlpatterns = patterns('vps_monitor.views',
 
     url(r'^$', 'index'),
 
-    url(r'^get_os/$', 'get_os'),
-    url(r'^get_mem/$', 'get_mem'), 
+    url(r'^get_info/$', 'get_info'),
 
     url(r'^admin/', include(admin.site.urls)),
 )

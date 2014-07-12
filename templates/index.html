@@ -1,60 +1,111 @@
-<table>
-  <thead>
-    <tr>
-      <td>
-        域名/IP地址
-      </td>
-      <td>
-        端口
-      </td>
-      <td>
-        用户名
-      </td>
-      <td>
-        操作系统
-      </td>
-      <td>
-        内存占用（used/free）
-      </td>
-    </tr>
-  </thead>
-  <tbody>
-    {% for remote in remote_list %}
-    <tr data-hostname='{{ remote.address }}' data-port='{{ remote.port }}' data-username='{{ remote.username }}' data-password='{{ remote.password }}'>
-      <td>
-        {{ remote.address }}
-      </td>
-      <td>
-        {{ remote.port }}
-      </td>
-      <td>
-        {{ remote.username }}
-      </td>
-      <td class='J_async' data-view='/get_os'>
-      </td>
-      <td class='J_async' data-view='/get_mem'>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <table>
+      <thead>
+        <tr>
+          <td>
+            域名/IP地址
+          </td>
+          <td>
+            端口
+          </td>
+          <td>
+            用户名
+          </td>
+          <td>
+            状态
+          </td>
+          <td>
+            操作系统
+          </td>
+          <td>
+            CPU空闲率
+          </td>
+          <td>
+            内存占用（used/free）
+          </td>
+          <td>
+            硬盘占用（used/free）
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for remote in remote_list %}
+        <tr data-id='{{ remote.id }}'>
+          <td>
+            {{ remote.address }}
+          </td>
+          <td>
+            {{ remote.port }}
+          </td>
+          <td>
+            {{ remote.username }}
+          </td>
+          <td class='J_ping' data-url='{{ remote.address }}'>
+          </td>
+          <td class='J_async' data-method='get_os_type'>
+          </td>
+          <td class='J_async J_runtime' data-method='get_cpu_usage'>
+          </td>
+          <td class='J_async' data-method='get_memory_usage'>
+          </td>
+          <td class='J_async' data-method='get_disk_usage'>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-<script src='http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js'></script>
-<script>
-$('.J_async').each(function(){
-  var that = $(this);
-  var url = that.data('view');
-  var tr = that.parent('tr');
-  var data = {
-    'hostname': tr.data('hostname'),
-    'port': tr.data('port'),
-    'username': tr.data('username'),
-    'password': tr.data('password')
-  }
-  $.get(url, data).then(function(res){
-    if(res.success){
-      that.html(res.data);
+    <script src='http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js'></script>
+    <script>
+
+    function ping(ip, callback){
+      var img = new Image();
+      var start = new Date().getTime();
+      img.src = "http://" + ip +"?t="+start;
+      var flag = false;
+      img.onload = img.onerror = img.onabort = function(){
+          flag = true;
+          callback('正常');
+      }
+      setTimeout(function(){
+          if(!flag){
+              callback('未响应');
+          }
+      },5000);
     }
-  });
-});
-</script>
+
+
+    $('.J_async').each(function(){
+        var that = $(this);
+        var url = '/get_info';
+        var tr = that.parent('tr');
+        var data = {
+            'id': tr.data('id'),
+            'method': that.data('method')
+        }
+        $.get(url, data).then(function(res){
+            if(res.success){
+                that.html(res.data);
+            }
+        });
+        if(that.hasClass('J_runtime')){
+            setInterval(function(){
+                $.get(url, data).then(function(res){
+                    if(res.success){
+                        that.html(res.data);
+                    }
+                });
+            },3000);
+        };
+     });
+
+    $('.J_ping').each(function(){
+        var that = $(this);
+        var url = that.data('url');
+        ping(url, function(res){
+            that.html(res);
+        });
+    });
+
+
+
+    </script>
